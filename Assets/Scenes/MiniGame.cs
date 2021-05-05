@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class MiniGame : MonoBehaviour
 {
-    int speed = 100;
+    int speed = 200;
     bool isMovingRight = false;
     bool isMovingLeft = false;
     bool isMovingUp = false;
     bool isMovingDown = false;
+
+    public GameObject deathScreen;
+    public GameObject passScreen;
 
     // Start is called before the first frame update
     void Start()
@@ -20,55 +23,92 @@ public class MiniGame : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKey(KeyCode.D))
-        {
-            isMovingRight = true;
-            isMovingLeft = false;
-            isMovingUp = false;
-            isMovingDown = false;
-
-            while (isMovingRight == true)
+        { 
+            if (isMovingLeft == false)
             {
-                transform.Translate(Vector3.right * Time.deltaTime * speed);
-            } 
+                Vector3 v = transform.right * speed;
+                GetComponent<Rigidbody2D>().velocity = v;
+                isMovingRight = true;
+                isMovingLeft = false;
+                isMovingUp = false;
+                isMovingDown = false;
+            }  
         }
 
         if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A))
         {
-            isMovingRight = false;
-            isMovingLeft = true;
-            isMovingUp = false;
-            isMovingDown = false;
-
-            while (isMovingLeft == true)
+            if (isMovingRight == false)
             {
-                transform.Translate(Vector3.left * Time.deltaTime * speed);
+                Vector3 v = -transform.right * speed;
+                GetComponent<Rigidbody2D>().velocity = v;
+                isMovingRight = false;
+                isMovingLeft = true;
+                isMovingUp = false;
+                isMovingDown = false;
             }
         }
 
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKey(KeyCode.W))
         {
-            isMovingRight = false;
-            isMovingLeft = false;
-            isMovingUp = true;
-            isMovingDown = false;
-
-            while (isMovingUp == true)
+            if (isMovingDown == false)
             {
-                transform.Translate(Vector3.up * Time.deltaTime * speed);
-            }  
+                Vector3 v = transform.up * speed;
+                GetComponent<Rigidbody2D>().velocity = v;
+                isMovingRight = false;
+                isMovingLeft = false;
+                isMovingUp = true;
+                isMovingDown = false;
+            }           
         }
 
         if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKey(KeyCode.S))
         {
-            isMovingRight = false;
-            isMovingLeft = false;
-            isMovingUp = false;
-            isMovingDown = true;
-
-            while (isMovingDown == true)
+            if (isMovingUp == false)
             {
-                transform.Translate(Vector3.down * Time.deltaTime * speed);
+                Vector3 v = -transform.up * speed;
+                GetComponent<Rigidbody2D>().velocity = v;
+                isMovingRight = false;
+                isMovingLeft = false;
+                isMovingUp = false;
+                isMovingDown = true;
             }
         }
+    }
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.tag == "Wall")
+        {
+            Debug.Log("Dead");
+            OnDeath();
+        }
+
+        if (other.gameObject.tag == "End")
+        {
+            OnPass();
+        }
+    }
+
+    void OnDeath()
+    {
+        isMovingRight = true;
+        isMovingLeft = true;
+        isMovingUp = true;
+        isMovingDown = true;
+
+        speed = 0;
+
+        deathScreen.SetActive(true);
+    }
+
+    void OnPass()
+    {
+        isMovingRight = true;
+        isMovingLeft = true;
+        isMovingUp = true;
+        isMovingDown = true;
+
+        speed = 0;
+
+        passScreen.SetActive(true);
     }
 }
